@@ -69,10 +69,10 @@ $ heroku push heroku master
 $ heroku config:set METHOD=加密方法 KEY=密码
 ```
 
-#### 运行，如：node local.js -s appname.herokuapp.com -l 1080 -m rc4 -k PASSWORD
+#### 运行，如：node local.js -s appname.herokuapp.com -l 1080 -m rc4 -k PASSWORD -r 80
 
 ``` bash
-$ node local.js -s 应用名称.herokuapp.com -l 本地端口 -m 加密方法 -k
+$ node local.js -s 应用名称.herokuapp.com -l 本地端口 -m 加密方法 -k 密码 -r 80
 ```
     
     修改代理设置 SOCKS5 127.0.0.1:1080
