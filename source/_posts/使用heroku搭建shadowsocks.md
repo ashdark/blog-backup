@@ -2,6 +2,7 @@
 title: 使用heroku搭建shadowsocks
 date: 2017-04-20 19:51:22
 tags: [heroku,shadowsocks]
+categories: "shadowsocks"
 ---
 
 
