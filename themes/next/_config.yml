@@ -134,7 +134,7 @@ font:
 # Key is the link label showing to end users.
 # Value is the target link (E.g. GitHub: https://github.com/iissnan)
 social:
-  GitHub: https://github.com/ashdark
+  GitHub: https://github.com/ijuniorfu
 
 
 
@@ -155,7 +155,7 @@ social_icons:
 # Sidebar Avatar
 # in theme directory(source/images): /images/avatar.jpg
 # in site  directory(source/uploads): /uploads/avatar.jpg
-avatar: /images/ashdark.jpg
+avatar: /images/ijuniorfu.jpg
 
 
 # Table Of Contents in the Sidebar
