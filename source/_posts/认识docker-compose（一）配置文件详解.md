@@ -104,13 +104,13 @@ image 则是指定服务的镜像名称或镜像 ID。如果镜像在本地不�
     image: webapp:tag
     
 既然可以在 docker-compose.yml 中定义构建任务，那么一定少不了 arg 这个标签，就像 Dockerfile 中的 ARG 指令，它可以在构建过程中指定环境变量，但是在构建成功后取消，在 docker-compose.yml 文件中也支持这样的写法：
-
+```
     build:
       context: .
       args:
         buildno: 1
         password: secret
-        
+```        
         
 下面这种写法也是支持的，一般来说下面的写法更适合阅读。
 ```
@@ -158,6 +158,7 @@ image 则是指定服务的镜像名称或镜像 ID。如果镜像在本地不�
 在使用 Compose 时，最大的好处就是少打启动命令，但是一般项目容器启动的顺序是有要求的，如果直接从上到下启动容器，必然会因为容器依赖问题而启动失败。
 例如在没启动数据库容器的时候启动了应用容器，这时候应用容器会因为找不到数据库而退出，为了避免这种情况我们需要加入一个标签，就是 depends_on，这个标签解决了容器的依赖、启动先后的问题。
 例如下面容器会先启动 redis 和 db 两个服务，最后才启动 web 服务：
+
 ```   
     version: '2'
     services:
@@ -170,7 +171,8 @@ image 则是指定服务的镜像名称或镜像 ID。如果镜像在本地不�
         image: redis
       db:
         image: postgres
-```       
+```
+
         
 注意的是，默认情况下使用 docker-compose up web 这样的方式启动 web 服务时，也会启动 redis 和 db 两个服务，因为在配置文件中定义了依赖关系。
 
@@ -233,12 +235,14 @@ docker-compose.yml 中可以定义一个专门存放变量的文件。
     env_file: .env
     
 或者根据 docker-compose.yml 设置多个：
+
 ```
     env_file:
       - ./common.env
       - ./apps/web.env
       - /opt/secrets.env
 ```
+
 注意的是这里所说的环境变量是对宿主机的 Compose 而言的，如果在配置文件中有 build 操作，这些变量并不会进入构建过程中，如果要在构建中使用变量还是首选前面刚讲的 arg 标签。
 
 
@@ -246,6 +250,7 @@ docker-compose.yml 中可以定义一个专门存放变量的文件。
 
 与上面的 env_file 标签完全不同，反而和 arg 有几分类似，这个标签的作用是设置镜像变量，它可以保存变量到镜像里面，也就是说启动的容器也会包含这些变量设置，这是与 arg 最大的不同。
 一般 arg 标签的变量仅用在构建过程中。而 environment 和 Dockerfile 中的 ENV 指令一样会把变量一直保存在镜像、容器中，类似 docker run -e 的效果。
+
 ```
     environment:
       RACK_ENV: development
@@ -256,7 +261,9 @@ docker-compose.yml 中可以定义一个专门存放变量的文件。
       - RACK_ENV=development
       - SHOW=true
       - SESSION_SECRET
-```      
+```
+
+
 ## expose
 
 这个标签与Dockerfile中的EXPOSE指令一样，用于指定暴露的端口，但是只是作为一种参考，实际上docker-compose.yml的端口映射还得ports这样的标签。
@@ -276,22 +283,28 @@ docker-compose.yml 中可以定义一个专门存放变量的文件。
      - project_db_1:mysql
      - project_db_1:postgresql
 ```
+
 ## extra_hosts
 
 添加主机名的标签，就是往/etc/hosts文件中添加一些记录，与Docker client的--add-host类似：
+
 ```
     extra_hosts:
      - "somehost:162.242.195.82"
      - "otherhost:50.31.209.229"
- ```    
+ ```  
+   
 启动之后查看容器内部hosts： 
+
 ```
     162.242.195.82  somehost
     50.31.209.229   otherhost
 ```
+
 ## labels
 
 向容器添加元数据，和Dockerfile的LABEL指令一个意思，格式如下：
+
 ```
     labels:
        com.example.description: "Accounting webapp"
@@ -302,33 +315,40 @@ docker-compose.yml 中可以定义一个专门存放变量的文件。
        - "com.example.department=Finance"
        - "com.example.label-with-empty-value"
  ```      
+ 
 ## links
 
 还记得上面的depends_on吧，那个标签解决的是启动顺序问题，这个标签解决的是容器连接问题，与Docker client的--link一样效果，会连接到其它服务中的容器。
 格式如下：
+
 ```
     links:
      - db
      - db:database
      - redis
 ```
+
 使用的别名将会自动在服务容器中的/etc/hosts里创建。例如：
+
 ```
     172.12.2.186  db
     172.12.2.186  database
     172.12.2.187  redis
 ```
+
 相应的环境变量也将被创建。
 
 ## logging
 
 这个标签用于配置日志服务。格式如下：
+
 ```
     logging:
       driver: syslog
       options:
         syslog-address: "tcp://192.168.0.42:123"
-```        
+```
+
 默认的driver是json-file。只有json-file和journald可以通过docker-compose logs显示日志，其他方式有其他日志查看方式，但目前Compose不支持。对于可选值可以使用options指定。
 
 ## pid
@@ -341,6 +361,7 @@ docker-compose.yml 中可以定义一个专门存放变量的文件。
 
 映射端口的标签。
 使用HOST:CONTAINER格式或者只是指定容器的端口，宿主机会随机映射端口。
+
 ```
     ports:
      - "3000"
@@ -348,6 +369,7 @@ docker-compose.yml 中可以定义一个专门存放变量的文件。
      - "49100:22"
      - "127.0.0.1:8001:8001"
 ```
+
 > 注意：当使用HOST:CONTAINER格式来映射端口时，如果你使用的容器端口小于60你可能会得到错误得结果，因为YAML将会解析xx:yy这种数字格式为60进制。
 > 所以建议采用字符串格式。
 
@@ -372,6 +394,7 @@ docker-compose.yml 中可以定义一个专门存放变量的文件。
 挂载一个目录或者一个已存在的数据卷容器，可以直接使用 [HOST:CONTAINER] 这样的格式，或者使用 [HOST:CONTAINER:ro] 这样的格式，后者对于容器来说，数据卷是只读的，这样可以有效保护宿主机的文件系统。
 Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指定相对目录。
 数据卷的格式可以是下面多种形式：
+
 ```
     volumes:
       // 只是指定一个路径，Docker 会自动在创建一个数据卷（这个路径是容器内部的）。
@@ -388,8 +411,8 @@ Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指
     
       // 已经存在的命名的数据卷。
       - datavolume:/var/lib/mysql
-```     
-      
+```
+    
       
 如果你不使用宿主机的路径，你可以指定一个volume_driver。
 
@@ -397,16 +420,19 @@ Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指
 ## volumes_from
 
 从其它容器或者服务挂载数据卷，可选的参数是 :ro或者 :rw，前者表示容器只读，后者表示容器对数据卷是可读可写的。默认情况下是可读可写的。
+
 ```
     volumes_from:
       - service_name
       - service_name:ro
       - container:container_name
       - container:container_name:rw
-```     
+```
+
 ## cap_add, cap_drop
 
 添加或删除容器的内核功能。
+
 ```
     cap_add:
       - ALL
@@ -414,7 +440,8 @@ Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指
     cap_drop:
       - NET_ADMIN
       - SYS_ADMIN
-```     
+```
+
 ## cgroup_parent
 
 指定一个容器的父级cgroup。
@@ -424,45 +451,54 @@ Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指
 ## devices
 
 设备映射列表。与Docker client的--device参数类似。
+
 ```
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
 ```
+
 ## extends
 
 这个标签可以扩展另一个服务，扩展内容可以是来自在当前文件，也可以是来自其他文件，相同服务的情况下，后来者会有选择地覆盖原有配置。
+
 
 ```
     extends:
       file: common.yml
       service: webapp
 ```
+
 用户可以在任何地方使用这个标签，只要标签内容包含file和service两个值就可以了。file的值可以是相对或者绝对路径，如果不指定file的值，那么Compose会读取当前YML文件的信息。
 
 ## network_mode
 
 网络模式，与Docker client的--net参数类似，只是相对多了一个service:[service name] 的格式。
 例如：
+
 ```
     network_mode: "bridge"
     network_mode: "host"
     network_mode: "none"
     network_mode: "service:[service name]"
     network_mode: "container:[container name/id]"
-```    
+``` 
+   
 可以指定使用服务或者容器的网络。
 
 ## networks
 
 加入指定网络，格式如下：
+
 ```
     services:
       some-service:
         networks:
          - some-network
          - other-network
-```         
+``` 
+        
 关于这个标签还有一个特别的子标签aliases，这是一个用来设置服务别名的标签，例如：
+
 ```
     services:
       some-service:
@@ -475,6 +511,7 @@ Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指
             aliases:
              - alias2
 ```
+
 相同的服务可以在不同的网络有不同的别名。
 
 
@@ -482,6 +519,7 @@ Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指
 
 还有这些标签：cpu_shares, cpu_quota, cpuset, domainname, hostname, ipc, mac_address, mem_limit, memswap_limit, privileged, read_only, restart, shm_size, stdin_open, tty, user, working_dir
 上面这些都是一个单值的标签，类似于使用docker run的效果。
+
 ```
     cpu_shares: 73
     cpu_quota: 50000
@@ -505,7 +543,8 @@ Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指
     shm_size: 64M
     stdin_open: true
     tty: true
-```   
+```
+   
 
              
     
